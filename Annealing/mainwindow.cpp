@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     ui->setupUi(this);
-
+    srand (2);
     for(int i=0;i<countItems;i++)
     {
         int x = rand() %301 - 100;
@@ -68,39 +68,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //if (bestPathCoast == INT_MAX) pathCoast = bestPathCoast;
 }
 
-void MainWindow::draw()
-{
-    QGraphicsScene *scene = new QGraphicsScene(ui->graphicsView);
-    //Это как раз создана сцена. Сцена - это класс для работы с 2D графикой.
-    //Теперь, раз это график, то построим координатные оси X и Y.
-   // QPen pen(Qt::green);//Просто выбираем цвет для карандашика
-    //scene->addLine(0,90,180,90,pen);//x
-    //scene->addLine(90,0,90,180,pen);//y
-    scene->clear();
-    ui->textBrowser->clear();
-    double rad = 2;
-    for(int i=0;i<countItems;i++)
-    {
-        int x = std::get<0>(points[i]);
-        int y = std::get<1>(points[i]);
-        QPointF pt = QPointF(x,y);
-        //ui->textBrowser->insertPlainText(QString::number(m[i].nextstate[j]));
-        ui->textBrowser->insertPlainText(QString::number(x));
-        ui->textBrowser->insertPlainText(",");
-        ui->textBrowser->insertPlainText(QString::number(y));
-        ui->textBrowser->insertPlainText("              ");
-
-        scene->addEllipse(pt.x()-rad, pt.y()-rad, rad*2.0, rad*2.0,
-            QPen(), QBrush(Qt::SolidPattern));
-    }
-
-
-
-    ui->graphicsView->setScene(scene);
-
-
-
-}
 
 void MainWindow::drawWithPath()
 {
