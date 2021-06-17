@@ -16,8 +16,9 @@ vector<tuple<int, int>> startPoints;
 vector<tuple<int, int>> bestPoints;
 int pathCoast = INT_MAX;
 int bestPathCoast = INT_MAX ;
+constexpr double EPS = 1e-11;
 double temp = 100;
-int countItems = 10;//что то где то не так
+int countItems = 20;
 int countBurns = 0;
 
 double distanceSqr(tuple<int, int> a, tuple<int, int> b) {
@@ -140,6 +141,19 @@ void MainWindow::drawWithPath()
 
 }
 
+
+void MainWindow::calcPath(){
+    pathCoast = 0;
+    for(int i=1;i<countItems;i++)
+    {
+        int x = std::get<0>(points[i]);
+        int y = std::get<1>(points[i]);
+        pathCoast+=distanceSqr(points[i], points[i-1]);
+    }
+    pathCoast+=distanceSqr(points[countItems-1], points[0]);
+    countBurns++;
+}
+
 int random_1_100()
 {
     return rand() % 100 + 1;
@@ -166,7 +180,9 @@ void MainWindow::burn()
     RandomPlacement(itm1, itm2);
 
 
-    drawWithPath();
+
+    calcPath();
+   // drawWithPath();
     string d = "замена "+to_string(itm1)+ " на "+to_string(itm2)+".  Температура "+to_string(temp)+".  ";
     d+="лучший результат - "+to_string(bestPathCoast)+ " новый - "+to_string(pathCoast)+".   ";
     if(pathCoast<bestPathCoast) // новое решение лучше
@@ -194,21 +210,25 @@ void MainWindow::burn()
             //points = bestPoints;
         }
     }
-    temp = 0.9*temp;
-    ui->textBrowser_4->insertPlainText(QString::fromStdString(d));
-    ui->textBrowser_3->clear();
-       ui->textBrowser_3->insertPlainText(QString::number(temp));
+    temp = 0.8*temp;
+    //ui->textBrowser_4->insertPlainText(QString::fromStdString(d));
+    //ui->textBrowser_3->clear();
+    //   ui->textBrowser_3->insertPlainText(QString::number(temp));
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    while(temp>0.0000000001)
-    {
+    ui->textBrowser_6->clear();
+    unsigned int start_time =  clock();
 
+    while(temp>EPS)
+    {
         burn();
-//QThread::sleep(2);
-        //sleep(1000);
     }
+    //drawWithPath();
+    unsigned int end_time = clock(); // конечное время
+    unsigned int search_time = end_time - start_time; // искомое время
+    ui->textBrowser_6->insertPlainText(QString::number(search_time/1000.0));
 }
 
 MainWindow::~MainWindow()

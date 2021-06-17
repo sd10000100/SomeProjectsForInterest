@@ -17,8 +17,8 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-    void draw();
     void drawWithPath();
+    void calcPath();
     void burn();
     void generateRandomWay();
 

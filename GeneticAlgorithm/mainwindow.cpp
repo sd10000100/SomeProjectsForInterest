@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <vector>
+#include <vector>                                                                           ф
 #include <string>
 #include <algorithm>
 #include <tuple>
@@ -12,11 +12,18 @@ using namespace std;
 vector<tuple<int, int>> points;
 vector<tuple<int, int>> startPoints;
 vector<tuple<int, int>> bestPoints;
+vector<vector<tuple<int, int>>> chromosomes;
 int pathCoast = INT_MAX;
 int bestPathCoast = INT_MAX ;
 double temp = 100;
-int countItems = 10;//что то где то не так
+int countItems = 10;
 int countBurns = 0;
+
+struct Chromosome{
+    vector<tuple<int, int>> points;
+
+
+};
 
 double distanceSqr(tuple<int, int> a, tuple<int, int> b) {
     return (std::get<0>(a) - std::get<0>(b)) * (std::get<0>(a) - std::get<0>(b)) + (std::get<1>(a) - std::get<1>(b)) * (std::get<1>(a) - std::get<1>(b));
@@ -105,9 +112,24 @@ void MainWindow::drawWithPath()
 //    }
 //}
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::mutate()
 {
 
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    chromosomes={};
+    chromosomes[0] = RandomPlacement(points, countItems);
+    chromosomes[1] = RandomPlacement(points, countItems);
+    chromosomes[2] = RandomPlacement(points, countItems);
+    while(temp>0.0000000001)
+    {
+
+        mutate();
+//QThread::sleep(2);
+        //sleep(1000);
+    }
 }
 
 MainWindow::~MainWindow()
