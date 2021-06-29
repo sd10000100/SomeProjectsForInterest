@@ -17,10 +17,34 @@ int pathCoast = INT_MAX;
 int bestPathCoast = INT_MAX ;
 double temp = 100;
 int countItems = 10;
+int countBurns2 = 1;
 int countBurns = 1;
+int crossoveringCounter = 0;
+
+//int random_0_countItems(){
+//    return rand() % countItems;
+//}
+
+
+//int random_1_100()
+//{
+//    return rand() % 100 + 1;
+//}
+
+int random_int(int a, int b){
+    return rand() % (b - a + 1) + a;
+}
 
 double distanceSqr(tuple<int, int> a, tuple<int, int> b) {
     return (std::get<0>(a) - std::get<0>(b)) * (std::get<0>(a) - std::get<0>(b)) + (std::get<1>(a) - std::get<1>(b)) * (std::get<1>(a) - std::get<1>(b));
+}
+
+vector<tuple<int, int>> RandomPlacement(vector<tuple<int, int>> a, int n)
+{
+    vector<tuple<int, int>> b(a);
+    for(int i = 0; i < n; i++)
+        swap(b[i],b[rand()%n]);
+    return b;
 }
 
 struct Chromosome{
@@ -30,6 +54,13 @@ struct Chromosome{
     int getPathCoast() const
     {
         return pathCoast;
+    }
+
+    Chromosome()
+    {
+        //std::vector<tuple<int, int>> points(initPoints);
+        points = {};
+        pathCoast = 0;
     }
 
     Chromosome(vector<tuple<int, int>> initPoints)
@@ -66,6 +97,35 @@ struct Chromosome{
         pathCoast+=distanceSqr(points[countItems-1], points[0]);
     }
 
+    void MutateByRandom2Items()
+    {
+        RandomPlacement(random_int(1, countItems-1), random_int(1, countItems-1));
+        pathCoast = 0;
+        for(int i=1;i<points.size();i++)
+        {
+            int x = std::get<0>(points[i]);
+            int y = std::get<1>(points[i]);
+            pathCoast+=distanceSqr(points[i], points[i-1]);
+        }
+        pathCoast+=distanceSqr(points[countItems-1], points[0]);
+    }
+
+    void MutateByShuffle()
+    {
+       // points = newpoints;
+        random_shuffle ( points.begin(), points.end() );
+        pathCoast = 0;
+        for(int i=1;i<points.size();i++)
+        {
+            int x = std::get<0>(points[i]);
+            int y = std::get<1>(points[i]);
+            pathCoast+=distanceSqr(points[i], points[i-1]);
+        }
+        pathCoast+=distanceSqr(points[countItems-1], points[0]);
+    }
+    
+    
+
     int calcLength(){
         int tmp = 0;
         for(int i=1;i<points.size();i++)
@@ -87,13 +147,44 @@ private:
 
 vector<Chromosome> chromosomes;
 
-vector<tuple<int, int>> RandomPlacement(vector<tuple<int, int>> a, int n)
+
+Chromosome crossbreeding(int breakIndex,const Chromosome ch1, const Chromosome ch2)
 {
-    vector<tuple<int, int>> b(a);
-    for(int i = 0; i < n; i++)
-        swap(b[i],b[rand()%n]);
-    return b;
+    int i=0;
+    Chromosome newCh = Chromosome();
+
+    std::vector<tuple<int, int>> tempPoints1(ch1.points);
+    while(i<breakIndex)
+    {
+        newCh.points.push_back(ch1.points[i]);
+        auto it = std::find(tempPoints1.begin(), tempPoints1.end(), newCh.points[i]);
+        if(it != tempPoints1.end())
+            tempPoints1.erase(it);
+        i++;
+    }
+    while (i<ch2.points.size())
+    {
+        auto it = std::find(tempPoints1.begin(), tempPoints1.end(), ch2.points[i]);
+        if(it != tempPoints1.end())
+        {
+            newCh.points.push_back(ch2.points[i]);
+            tempPoints1.erase(it);
+        }
+        i++;
+    }
+    while (tempPoints1.size()!=0)
+    {
+        newCh.points.push_back(tempPoints1[0]);
+
+        auto it2 = std::find(tempPoints1.begin(), tempPoints1.end(), newCh.points[i]);
+        tempPoints1.erase(tempPoints1.begin());
+        i++;
+    }
+
+    newCh.pathCoast = newCh.calcLength();
+    return newCh;
 }
+
 
 void RandomPlacement(int ind1, int ind2)
 {
@@ -153,66 +244,72 @@ void MainWindow::drawWithPath()
     ui->textBrowser_2->clear();
        ui->textBrowser_2->insertPlainText(QString::number(pathCoast));
 
-    countBurns++;
+   // countBurns++;
     ui->textBrowser_5->clear();
-       ui->textBrowser_5->insertPlainText(QString::number(countBurns));
+       ui->textBrowser_5->insertPlainText(QString::number(countBurns2));
     ui->graphicsView->setScene(scene);
 }
 
-//void MainWindow::on_pushButton_clicked()
-//{
-//    while(temp>0.0000000001)
-//    {
 
-//        burn();
-////QThread::sleep(2);
-//        //sleep(1000);
-//    }
-//}
 
 void MainWindow::mutate()
 {
-    //chromosomes
+    Chromosome *worst = nullptr;
+    while(chromosomes.size()>countItems)
+    {
+        int p = 0;int i=0;worst = nullptr;
+        for (Chromosome &chromosome : chromosomes) {
+                if(worst==nullptr || worst->pathCoast<=chromosome.pathCoast)
+                       { worst = &chromosome;p=i;}
+                i++;
 
-           // int worst = -1;
-         //   int worstVal = -1;
-         //   int i=0;
+        }
+        chromosomes.erase(chromosomes.begin() + p);
+
+    }
+
              Chromosome *best = nullptr;
-             Chromosome *worst = nullptr;
+
     for (Chromosome &chromosome : chromosomes) {
             if(best==nullptr || best->pathCoast>=chromosome.pathCoast)
                     best = &chromosome;
             if(worst==nullptr || worst->pathCoast<=chromosome.pathCoast)
                     worst = &chromosome;
-//            if(worst==-1 || worstVal>chromosome.getPathCoast())
-//            {
-//                worst = i;
-//                worstVal = chromosome.getPathCoast();
-//            }
-//                    best = &chromosome;
-//                    i++;
-          //  ui->textBrowser_4->insertPlainText(QString::number(chromosome.getPathCoast()));
-          //  ui->textBrowser_4->insertPlainText(",");
+
 
     }
- //ui->textBrowser_4->insertPlainText("                            ");
-    worst->MutateByInversion(countBurns,best->points);
-    //bestPathCoast =
-//    auto it = std::find(v.begin(), v.end(), 5);
-//    if(it != v.end())
-//        v.erase(it);
+
+    int iter1 = random_int(1, countItems-1);
+    int iter2 = random_int(1, countItems-1);
+    auto autotmp1  = crossbreeding(countItems/2,chromosomes[iter1], chromosomes[iter2]);
+    auto autotmp2  = crossbreeding(countItems/2,chromosomes[iter2], chromosomes[iter1]);
+
+
+    chromosomes.push_back(autotmp1);
+    chromosomes.push_back(autotmp2);
+    int randitm = random_int(1, 100);
+    //if( randitm<40)
+        worst->MutateByInversion(countBurns,best->points);
+
+
+
     countBurns++;
+    countBurns2++;
 
 
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    chromosomes.push_back(points);//Chromosome(RandomPlacement(points, countItems)));
-    chromosomes.push_back(Chromosome(RandomPlacement(points, countItems)));
-    chromosomes.push_back(Chromosome(RandomPlacement(points, countItems)));
-    while(countBurns<countItems-1)
+
+
+    //while(countBurns<countItems-1)
+    while(countBurns2<230)
     {
+        chromosomes.push_back(points);//Chromosome(RandomPlacement(points, countItems)));
+        for(int i=1;i<countItems;i++)
+            chromosomes.push_back(Chromosome(RandomPlacement(points, countItems)));
+
         mutate();
         //temp=0.9*temp;
         for (Chromosome &chromosome : chromosomes) {
@@ -234,6 +331,7 @@ void MainWindow::on_pushButton_clicked()
 
     drawWithPath();
     countBurns = 1;
+  //  ui->textBrowser_4->insertPlainText("                                    ");
 }
 
 MainWindow::~MainWindow()

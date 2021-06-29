@@ -18,7 +18,7 @@ int pathCoast = INT_MAX;
 int bestPathCoast = INT_MAX ;
 constexpr double EPS = 1e-11;
 double temp = 100;
-int countItems = 20;
+int countItems = 10;//что то где то не так
 int countBurns = 0;
 
 double distanceSqr(tuple<int, int> a, tuple<int, int> b) {
@@ -160,7 +160,7 @@ int random_1_100()
 }
 
 int random_0_countItems(){
-    return rand() % 10;
+    return rand() % countItems;
 }
 
 void MainWindow::generateRandomWay()
