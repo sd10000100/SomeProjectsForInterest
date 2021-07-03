@@ -21,16 +21,6 @@ int countBurns2 = 1;
 int countBurns = 1;
 int crossoveringCounter = 0;
 
-//int random_0_countItems(){
-//    return rand() % countItems;
-//}
-
-
-//int random_1_100()
-//{
-//    return rand() % 100 + 1;
-//}
-
 int random_int(int a, int b){
     return rand() % (b - a + 1) + a;
 }

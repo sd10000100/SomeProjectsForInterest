@@ -26,10 +26,12 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        simulatedannealing.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+        simulatedannealing.h
 
 FORMS += \
         mainwindow.ui
