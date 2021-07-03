@@ -20,7 +20,11 @@ public:
 
     int getCountItems();
     int getCountBurns();
+    double  getTime();
+    void resetTemperature();
+    string getLog();
     vector<tuple<int, int>> getBestWay();
+    int getBestWayCoast();
 private:
     const double EPS = 1e-11;
     vector<tuple<int, int>> tempPoints_;
@@ -33,7 +37,8 @@ private:
     double temperature_ = 100;
     int countItems_ = 10;
     int countBurns_ = 0;
-    string log = "";
+    double time_ = 0;
+    string log_ = "";
 };
 
 
