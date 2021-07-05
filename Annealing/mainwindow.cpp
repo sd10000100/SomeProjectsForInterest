@@ -19,22 +19,25 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    std::vector<tuple<int, int>> points;
+
     ui->setupUi(this);
 
     srand (2423534654);
-    int countItems = 10;
+    // Загоняем точки в дело
+    std::vector<tuple<int, int>> points;
+    int countItems = 20;
     for(int i=0;i<countItems;i++)
     {
         int x = random_int(-100, 200);
         int y = random_int(-100, 200);
         points.push_back(make_tuple(x,y));
     }
-    annealMethod.Init(countItems, points);
+    annealMethod.init(countItems, points);
     drawWithPath();
 }
 
 
+// Визуализация пути по точкам
 void MainWindow::drawWithPath()
 {
     QGraphicsScene *scene = new QGraphicsScene(ui->graphicsView);
@@ -73,6 +76,7 @@ void MainWindow::drawWithPath()
     ui->textBrowser_5->clear();
     ui->textBrowser_5->insertPlainText(QString::number(annealMethod.getCountBurns()));
     ui->graphicsView->setScene(scene);
+
 }
 
 
@@ -85,7 +89,7 @@ void MainWindow::on_pushButton_clicked()
     ui->textBrowser_4->clear();
     ui->textBrowser_4->insertPlainText(QString::fromStdString(annealMethod.getLog()));
     all_time+=annealMethod.getTime();
-    ui->textBrowser_6->insertPlainText(QString::number(all_time));
+    ui->textBrowser_6->insertPlainText(QString::number(all_time/1000.0));
 
 }
 

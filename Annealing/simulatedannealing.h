@@ -9,7 +9,7 @@ using namespace std;
 template<typename T>
 class SimulatedAnnealing{
 public:
-    void Init(int countItems, vector<tuple<int, int>> startPoints,bool writeLog = true);
+    void init(int countItems, vector<tuple<int, int>> startPoints,bool writeLog = true);
     void setPoints(int countItems, vector<tuple<int, int>> startPoints);
     void updatePath();
     void burn();
